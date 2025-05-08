@@ -11,7 +11,66 @@ To write a yacc program to recognize a valid arithmetic expression that uses ope
 6.	Compile the yacc program with yacc compiler to produce output file as y.tab.c. eg $ yacc –d arith_id.y
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter an arithmetic expression as input and the tokens are identified as output.
-# PROGRAM![Screenshot 2025-05-08 135911](https://github.com/user-attachments/assets/840dd4f6-f0d5-4388-a93a-8bc3fec39de9)
+# PROGRAM!
+```
+cd3.l
+%{
+#include "y.tab.h"
+%}
+
+%%
+
+"=" {printf("\n Operator is EQUAL");} 
+"+" {printf("\n Operator is PLUS");}
+"-" {printf("\n Operator is MINUS");} 
+"/" {printf("\n Operator is DIVISION");}
+"*" {printf("\n Operator is MULTIPLICATION");} 
+[a-zA-Z]*[0-9]* {
+printf("\n Identifier is %s",yytext); return ID; }
+. return yytext[0];
+\n return 0;
+
+%%
+
+int yywrap()
+{
+return 1;
+}
+cd3.y
+%{
+#include <stdio.h>
+#include <stdlib.h>
+%}
+
+%token ID
+
+%%
+
+statement:
+      ID '=' E        { printf("\nAssignment expression is valid\n"); }
+    | E               { printf("\nValid arithmetic expression\n"); }
+    ;
+
+E:
+      E '+' ID        { }
+    | E '-' ID        { }
+    | E '*' ID        { }
+    | E '/' ID        { }
+    | ID              { }
+    ;
+
+%%
+
+int main() {
+    printf("Enter an expression:\n");
+    return yyparse();
+}
+
+void yyerror(char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
+```
+
 
 # OUTPUT
 ![Screenshot 2025-05-08 141555](https://github.com/user-attachments/assets/6d5002e4-174b-4ac6-bdb7-fa4e4c1f834a)
